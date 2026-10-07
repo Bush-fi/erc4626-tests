@@ -1,0 +1,2 @@
+@bush.fi/interfaces/=node_modules/@bush.fi/v3-interfaces/contracts/
+@bush.fi/solidity-utils/=node_modules/@bush.fi/v3-solidity-utils/contracts/
