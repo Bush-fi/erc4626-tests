@@ -12,7 +12,7 @@ contract ERC4626RobinhoodMorphoSteakhouseUSDGTest is ERC4626WrapperBaseTest {
     function _setupFork() internal pure override returns (ForkState memory forkState) {
         // Notice that when executing this function, the fork has not yet been created, so all chain states are empty.
         forkState.network = "robinhood";
-        forkState.blockNumber = 81646459;
+        forkState.blockNumber = 0;
     }
 
     function _setUpForkTestVariables() internal pure override returns (ERC4626SetupState memory erc4626State) {

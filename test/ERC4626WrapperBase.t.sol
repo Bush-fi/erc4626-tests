@@ -79,7 +79,12 @@ abstract contract ERC4626WrapperBaseTest is Test {
 
         forkState = _configurePermit2AndBufferToNetwork(forkState);
 
-        vm.createSelectFork({ blockNumber: forkState.blockNumber, urlOrAlias: forkState.network });
+        // A block number of 0 forks the latest block, since public RPCs prune the state of older blocks.
+        if (forkState.blockNumber == 0) {
+            vm.createSelectFork(forkState.network);
+        } else {
+            vm.createSelectFork({ blockNumber: forkState.blockNumber, urlOrAlias: forkState.network });
+        }
 
         // Read the buffer minimum from the production vault instead of hardcoding it, so the fuzz bounds always
         // track the constraint actually enforced by the deployed contract.
@@ -137,8 +142,8 @@ abstract contract ERC4626WrapperBaseTest is Test {
 
     /**
      * @notice Defines network and blockNumber.
-     * @dev The test assigns a default block number if no block number is given. Make sure the the buffer was not been
-     * initialized for the ERC4626 token in the current block number.
+     * @dev If no block number is given, the test forks the latest block. Make sure the buffer has not been
+     * initialized for the ERC4626 token at the forked block.
      * @return forkState The network and block number to fork.
      */
     function _setupFork() internal pure virtual returns (ForkState memory);
@@ -539,12 +544,7 @@ abstract contract ERC4626WrapperBaseTest is Test {
     }
 
     function _configurePermit2AndBufferToNetwork(ForkState memory forkState) private returns (ForkState memory) {
-        // Block Numbers are based on the deployment of BufferRouter.
-        // IMPORTANT: If a test requires a new blockNumber, change `overrideBlockNumber` in the test itself using the
-        // function `setUpForkTestVariables()`. Do not change the values below, since all tests depend on it.
-
         if (_compareStrings(forkState.network, "robinhood")) {
-            forkState.blockNumber = forkState.blockNumber != 0 ? forkState.blockNumber : 25050526;
             permit2 = IPermit2(0x000000000022D473030F116dDEE9F6B43aC78BA3);
             bufferRouter = IBufferRouter(0xd1a81d27D99b540240d1B011DAF4a74170Aa89b5);
             vault = IVault(0xB055000fbE3cc9bDE7742C583a86cc6283E3fF85);

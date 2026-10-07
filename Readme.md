@@ -27,9 +27,8 @@ There are some common errors that occur when testing a token. The step-by-step g
 
 1. Navigate to the wrapped token address on the Robinhood Chain block explorer;
 2. Check whether the Bush.fi Vault's buffer at the current block has liquidity for that token (Use the Vault Explorer's `getBufferBalance` function with the wrapped token address as the argument.)
-    1. If there is, it's probably reverting because the buffer was already initialized. Choose a block number prior to the buffer initialization and try again.
-        1. If the wrapper was recently created, use a block number right after the creation of the wrapper and try again.
-        2. If not, try an older block number, closer to the Bush.fi BufferRouter deployment (the default fork block in `ERC4626WrapperBase.t.sol`), where the Vault is already there but the buffer was not yet initialized.
+    1. If there is, it's probably reverting because the buffer was already initialized. By default, tests fork the latest block (`forkState.blockNumber = 0`), so set `forkState.blockNumber` to a block prior to the buffer initialization and try again.
+        1. Pinned blocks need an archive RPC: the public endpoint prunes old state and fails with `historical state ... is not available`. Set an archive URL for `robinhood` in `foundry.toml` while debugging.
 3. Check the asset of the wrapped token (underlying token) and get the holders.
     1. Check whether the top holder is the one used in the test.
         1. If it's not, change the holder to the top one. It may be a bit tricky if you're using an old block number. In that case, you would need to iterate over the holders list until you find a holder with sufficient balance at that specific block.
